@@ -3,12 +3,23 @@ package rename
 import (
 	// "fmt"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"regexp"
 )
 
-func rename(path string, filename string, source regexp.Regexp, dest string, run bool) error {
+func rename(path string, file fs.DirEntry, source regexp.Regexp, dest string, run bool) error {
+
+	if file.IsDir() {
+		return nil
+	}
+
+	filename := file.Name()
+
+	if !source.MatchString(filename) {
+		return nil
+	}
 
 	newName := source.ReplaceAllString(filename, dest)
 
@@ -27,7 +38,7 @@ func BatchRename(path string, reg string, outReg string, run bool) {
 	inReg := regexp.MustCompile(reg)
 	log.Println("start")
 	for _, file := range files {
-		err := rename(path, file.Name(), *inReg, outReg, run)
+		err := rename(path, file, *inReg, outReg, run)
 		if err != nil {
 			log.Printf("Rename %s fail. %s", file.Name(), err.Error())
 		}

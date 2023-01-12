@@ -19,4 +19,8 @@ func main() {
 	flag.BoolVar(&run, "run", false, "run ")
 	flag.Parse()
 	rename.BatchRename(path, inReg, outReg, run)
+	if !run {
+		println("*************\nTo execute rename process, use -run")
+	}
+
 }
