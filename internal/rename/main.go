@@ -9,10 +9,18 @@ import (
 	"regexp"
 )
 
-func rename(path string, file fs.DirEntry, source regexp.Regexp, dest string, run bool) error {
+func rename(path string, file fs.DirEntry, source regexp.Regexp, dest string, run bool, doFolder bool, recursive bool) error {
 
 	if file.IsDir() {
-		return nil
+		if recursive {
+			folderPath := fmt.Sprintf("%s/%s", path, file.Name())
+			BatchRename(folderPath, source.String(), dest, run, doFolder, recursive)
+		}
+
+		if !doFolder {
+			return nil
+		}
+
 	}
 
 	filename := file.Name()
@@ -30,7 +38,7 @@ func rename(path string, file fs.DirEntry, source regexp.Regexp, dest string, ru
 	return nil
 }
 
-func BatchRename(path string, reg string, outReg string, run bool) {
+func BatchRename(path string, reg string, outReg string, run bool, doFolder bool, recursive bool) {
 	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatalln(err)
@@ -38,7 +46,7 @@ func BatchRename(path string, reg string, outReg string, run bool) {
 	inReg := regexp.MustCompile(reg)
 	log.Println("start")
 	for _, file := range files {
-		err := rename(path, file, *inReg, outReg, run)
+		err := rename(path, file, *inReg, outReg, run, doFolder, recursive)
 		if err != nil {
 			log.Printf("Rename %s fail. %s", file.Name(), err.Error())
 		}
