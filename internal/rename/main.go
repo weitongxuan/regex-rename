@@ -44,12 +44,11 @@ func BatchRename(path string, reg string, outReg string, run bool, doFolder bool
 		log.Fatalln(err)
 	}
 	inReg := regexp.MustCompile(reg)
-	log.Println("start")
+
 	for _, file := range files {
 		err := rename(path, file, *inReg, outReg, run, doFolder, recursive)
 		if err != nil {
 			log.Printf("Rename %s fail. %s", file.Name(), err.Error())
 		}
 	}
-	log.Println("Finish")
 }
